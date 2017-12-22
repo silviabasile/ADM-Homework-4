@@ -161,6 +161,16 @@ def sub_authors_nodes(G, author_id, distance):
 
 
 def dijkstra(G, start, end):
+    '''
+    This function evaluates the distance of the shortest path using Dijkstra algorithm.
+    The function does not works if the author ids given in input are not in the graph or if they are not connected.
+    Moreover, it uses the *heap* data structure to keep track of the visited nodes and of their distances.
+
+    Input: the graph and two author ids (the starting node and the final node).
+    
+    Output: a tuple in which the first element is the distance of the shortest path
+    and the second element is a list of all nodes involved to go from the starting node to the final node.
+    '''
     # Check whether the two nodes are in the graph
     # Keep the checks separated so that we know which one we have to modify
     if start not in G.nodes():
