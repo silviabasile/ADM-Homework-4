@@ -8,7 +8,7 @@
 This repository is about the fourth homework of *Algorithmic Methods of Data Mining*. In this file is possible to find an explanation to the function used in the first two exercises of the homework. 
 
 - `convert_names(data)` : This function converts all the author names with special characters in 
-    readble names using the function "html.unescape". For example the name *'david echeverr&iacute;a ciaurri'* will become *'david echeverría ciaurri'*.
+    readble names using the function "html.unescape".
     
     Input: the whole dataset (data)
     
@@ -26,7 +26,7 @@ def convert_names(data):
     return data
 ```
 
-- `create_dict(data)` : This function creates a dictionary in which the keys are the touples 
+- `create_dict(data)` : This function creates a dictionary in which the keys are the tuples 
     `(author, author_id)` and values are the `id_publication_int`.
     
     Input: the dataset (data)
@@ -77,13 +77,13 @@ def jaccard(G, author, next_author):
     each author is a node and two authors are linked if they share at least one publication.
     Each node has as attributes the author id, the set of publications and the author name.
     
-    Input: authors' dict
+    Input: the whole dataset and the authors' dict
     
     Output: the graph 
 
 
 ```python
-def create_graph(authors):
+def create_graph(data, authors):
     #initialize the graph
     G = nx.Graph()
     #add nodes with attributes
@@ -123,18 +123,18 @@ def sub_conference_nodes(conference_id, data):
 - `sub_authors_nodes(author_id, distance)` : This function creates a dictionary called 'visited' in
     which there are d keys representing the hop distances and the values are all the nodes that have
     hop distance equal to that key. 
-    The dictionary is initialize as follows: at hop distance $0$ there is hust the author id given in input
-    and at hop distance $1$ there are all the neighbors of it.
+    The dictionary is initialize as follows: at hop distance 0 there is hust the author id given in input
+    and at hop distance 1 there are all the neighbors of it.
     The function returns a list of all interested nodes (without repetitions) taken from the 
     dictionary values.
 
-    Input: an author id and an integer representing the distance
+    Input: the graph, an author id and an integer representing the distance
     
     Output: the list of interesetd author ids
 
 
 ```python
-def sub_authors_nodes(author_id, distance):
+def sub_authors_nodes(G, author_id, distance):
     # create and initialize the dict
     visited = {0 : set([author_id]), 1: set(G.neighbors(author_id))}
     for k in range(2, distance+1): #create the keys
@@ -156,4 +156,85 @@ def sub_authors_nodes(author_id, distance):
     for v in visited.values():
         nodes_list.update(v)
     return list(nodes_list)
+```
+
+- `dijkstra` : This function evaluates the distance of the shortest path using Dijkstra algorithm.
+    The function does not works if the author ids given in input are not in the graph or if they are not connected.
+    Moreover, it uses the *heap* data structure to keep track of the visited nodes and of their distances.
+
+    Input: the graph and two author ids (the starting node and the final node).
+    
+    Output: a tuple in which the first element is the distance of the shortest path
+    and the second element is a list of all nodes involved to go from the starting node to the final node. 
+
+
+```python
+def dijkstra(G, start, end):
+    # Check whether the two nodes are in the graph
+    # Keep the checks separated so that we know which one we have to modify
+    if start not in G.nodes():
+        return("The start node is not in the graph.")
+    if end not in G.nodes():
+        return("The end node is not in the graph.")
+    
+    # Check whether there is no path between the start and end nodes:
+    # if end is in the nodes of the subgraph induced by start 
+    if end not in nx.node_connected_component(G, start):
+        return("There is no path between the start and end nodes.")
+    
+    # heapq object, list of tuples with (dist/cost, node)
+    q = [(0, start, [])]
+    # set of unseen nodes
+    seen = set()
+    
+    while q:
+        # dist and node of the closest node (closest to the previously seen node)
+        dist, current, path = heapq.heappop(q)
+        
+        if current not in seen:
+            # update the seen set
+            seen.add(current)
+            # update the path
+            path = path + [current]
+            # return if I found it
+            if current == end:
+                return (dist, path)
+            # all current neighbors
+            temp = G[current]
+            # all unseen (not-visited) neighbors of current
+            to_see = list(set(temp).difference(seen))
+            
+            # list of tuples with (updated-dist, node)
+            # where node is one of the unseen neighbors and updated-dist is the distance from start to the node
+            neigh = [(dist+temp[n]["weight"], n) for n in to_see]
+            
+            # add the new info ()
+            for d, n in neigh:
+                heapq.heappush(q, (d, n, path))
+```
+
+- `group_number` : This function evaluates the shortest path between each node of
+    the graph and each node of the subset I and returns the minimum shortest path among them.
+    
+    Input: the graph G and a subset of nodes I
+    
+    Output: a dictionary in which keys = nodes, values = group number.
+    
+    The dictionary contains only the nodes connected with the nodes in the subset.
+
+
+```python
+def group_number(G, I):
+    group = {}
+    for graph_node in G.nodes():
+        #inizialize the minimum with infinite
+        min_path = [float('inf')]
+        for sub_node in I :
+            new_path = dijkstra(G, graph_node, sub_node)
+            if type(new_path[0]) == float and new_path[0] < min_path[0]:
+                min_path = new_path
+        if type(new_path[0]) == float:
+            group[graph_node] = min_path
+            #print('The GroupNumber of the node %s is %s' %(graph_node, min_path))
+    return group
 ```
