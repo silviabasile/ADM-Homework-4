@@ -7,6 +7,13 @@
 
 This repository is about the fourth homework of *Algorithmic Methods of Data Mining*. In this file is possible to find an explanation to the function used in the first two exercises of the homework. 
 
+#### 1. 
+In this section we loaded the data from the given file and in order to create a graph in which each node represents an author and two nodes are linked if the two authors share, at least, one publication. 
+Moreover, the nodes have as attributes the author name and his publications and the edges are weighted through the Jaccard similarity.
+Before creating the graph it is necessary to work on the dataset we have and extract the information we need. For this reason we created a new dictionary called `authors` in which we keep only the authors' name and id and the set of thier publications.
+
+The function used are descrived below.
+
 - `convert_names(data)` : This function converts all the author names with special characters in 
     readble names using the function "html.unescape".
     
@@ -105,6 +112,12 @@ def create_graph(data, authors):
     
     Output: the list of interested author ids
 
+#### 2. 
+In this section we created two different subgraphs. In the former case, given a conference id we derived from the original graph a subgraph in which the nodes are the authors who published at the input conference at least once and then we computed some centralities measures like the degree, closeness and betweeness. 
+In the latter one, starting from a given node we made a subgraph in which there are all the nodes that are at *hop distance* at most equal to a specific distance (number of edges) given in input.
+
+The function used are descrived below.
+
 
 ```python
 def sub_conference_nodes(conference_id, data):
@@ -157,6 +170,9 @@ def sub_authors_nodes(G, author_id, distance):
         nodes_list.update(v)
     return list(nodes_list)
 ```
+
+#### 3. 
+In this section we provided a version of the *Dijkstra Algorithm* to evaluate the shortest path between two nodes of a graph. In the last part we built up a code that given a subset of nodes, evaluates the *Group Number* between each node of the graph and the node of the subset. 
 
 - `dijkstra` : This function evaluates the distance of the shortest path using Dijkstra algorithm.
     The function does not works if the author ids given in input are not in the graph or if they are not connected.
