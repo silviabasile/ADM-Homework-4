@@ -8,7 +8,7 @@
 This repository is about the fourth homework of *Algorithmic Methods of Data Mining*. In this file is possible to find an explanation to the function used in the first two exercises of the homework. 
 
 #### 1. 
-In this section we loaded the data from the given file and in order to create a graph in which each node represents an author and two nodes are linked if the two authors share, at least, one publication. 
+In this section we loaded the data from the given file in order to create a graph in which each node represents an author and two nodes are linked if the two authors share, at least, one publication. 
 Moreover, the nodes have as attributes the author name and his publications and the edges are weighted through the Jaccard similarity.
 Before creating the graph it is necessary to work on the dataset we have and extract the information we need. For this reason we created a new dictionary called `authors` in which we keep only the authors' name and id and the set of thier publications.
 
